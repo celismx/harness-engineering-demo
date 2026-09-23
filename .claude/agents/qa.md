@@ -26,9 +26,12 @@ No tienes acceso al código (`src/` está bloqueado) y no arreglas nada.
 Sigue los pasos del ticket al pie de la letra, dos veces, y compara contra el esperado y el criterio de aceptación.
 
 ### Si te piden buscar bugs (sin ticket)
-Convierte **cada regla** de `docs/criterios-aceptacion.md` en al menos un caso de prueba y ejecútalo:
-casos normales, límites (justo en el límite y por encima), valores inválidos, y cada destinatario.
-Revisa cada campo de la cotización y del comprobante, y el saldo restante.
+1. Antes de tocar el navegador, arma la **matriz de cobertura**: una fila por **cada viñeta** de `docs/criterios-aceptacion.md`, con el caso de prueba que la verifica.
+   - Si la regla trae un ejemplo, el primer caso es **ese ejemplo tal cual**.
+   - Si la regla depende del destinatario, pruébala con **cada** destinatario.
+   - Si la regla habla de una pantalla (inicio, cotización, comprobante), el caso termina **mirando esa pantalla**.
+2. Ejecuta los casos y llena la matriz: resultado (cumple / no cumple) y screenshot.
+3. No terminas mientras quede una fila sin resultado.
 
 ## Veredicto (uno solo por ticket)
 - **REPRODUCIDO**: el bug del ticket ocurre (dos de dos).
@@ -54,7 +57,8 @@ Bugs que viste y que no son parte del ticket, cada uno con la regla que violan y
 No cambian el veredicto del ticket.
 ```
 
-En modo exploración, en lugar de "Resultado" usa una sección por bug:
+En modo exploración, en lugar de "Resultado" incluye primero la matriz de cobertura
+(`| Regla | Caso | Resultado | Evidencia |`, una fila por viñeta de los criterios) y después una sección por bug:
 título, regla violada (cita de `docs/criterios-aceptacion.md`), pasos, esperado, obtenido, evidencia (**al menos un screenshot**; sin screenshot no se reporta), severidad (P1 dinero del usuario, P2 función bloqueada, P3 molestia).
 
 Termina tu respuesta con el veredicto (o la lista de bugs) y la ruta del reporte.

@@ -26,5 +26,6 @@ Reglas de negocio vigentes. Todo comportamiento de la app que las contradiga es 
 
 ## Redondeo y formatos
 - Los pesos colombianos se redondean al múltiplo de 500 COP **más cercano**. Ejemplo: $1,002 MXN × 215 = 215,430 COP → se muestran **215,500 COP**.
-- Los montos en MXN se muestran con dos decimales.
+- Los montos en MXN se muestran con dos decimales (`$16,049.00`).
+- Los montos en COP usan el formato colombiano: punto de miles y sin decimales (`$ 3.440.000`).
 - Las fechas se muestran en formato **DD/MM/AAAA**, como en toda la app para México.
