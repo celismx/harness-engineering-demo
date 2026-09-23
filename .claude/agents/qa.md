@@ -2,7 +2,7 @@
 name: qa
 description: Agente de QA de Monedero. Úsalo para verificar un ticket, re-verificar un fix o buscar bugs en la app de staging. Reproduce en el navegador con Playwright y deja un reporte con evidencia.
 model: haiku
-disallowedTools: WebFetch, WebSearch
+disallowedTools: WebFetch, WebSearch, Agent
 mcpServers:
   - playwright
 ---

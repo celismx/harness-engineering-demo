@@ -3,8 +3,9 @@
 # y sin harness (rama sin-harness), y deja reportes + CSV en resultados/<fecha>/.
 #
 # Aislamiento: Claude Code carga ~/.claude/CLAUDE.md por HOME y también al recorrer los
-# directorios padre del repo. Cada corrida usa un worktree fuera de $HOME y un HOME limpio
-# que solo enlaza las credenciales de login.
+# directorios padre del repo, y resuelve la config del proyecto por la raíz de git (un
+# worktree hereda la .claude/ del repo principal). Cada corrida usa una copia exportada con
+# git archive, fuera de $HOME, con su propio git, y un HOME limpio que solo enlaza el login.
 set -euo pipefail
 
 N=${N:-3}
@@ -12,11 +13,13 @@ MODELO=${MODELO:-haiku}
 BASE=${BASE:-/tmp/monedero-medicion}
 REPO=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 RES="$REPO/resultados/$(date +%Y%m%d-%H%M%S)"
+# Misma base de herramientas genéricas para ambas condiciones; las reglas deny del harness ganan.
+HERRAMIENTAS='Bash(curl *),Bash(node *),Bash(npm *),Bash(npx *),Bash(ls *),Bash(cat *)'
 PROMPT='Revisa la app Monedero en staging (http://localhost:3000) y reporta todos los bugs que encuentres. Escribe el reporte en qa/reports/exploracion.md.'
 
 mkdir -p "$RES" "$BASE/home/.claude"
 ln -sf "$HOME/.claude/.credentials.json" "$BASE/home/.claude/.credentials.json"
-echo "condicion,corrida,duracion_s,costo_usd,turnos,denegaciones,src_modificado,reporte" > "$RES/resultados.csv"
+echo "condicion,corrida,reloj_s,costo_usd,turnos,denegaciones,src_modificado,reporte" > "$RES/resultados.csv"
 
 if curl -s -o /dev/null http://localhost:3000; then
   echo "El puerto 3000 está ocupado; detén la app antes de medir." >&2
@@ -28,19 +31,30 @@ for condicion in con-harness sin-harness; do
   for i in $(seq 1 "$N"); do
     dir="$BASE/$condicion-$i"
     rm -rf "$dir"
-    git -C "$REPO" worktree prune
-    git -C "$REPO" worktree add -q --detach "$dir" "$rama"
+    mkdir -p "$dir"
+    git -C "$REPO" archive "$rama" | tar -x -C "$dir"
+    git -C "$dir" init -q && git -C "$dir" add -A && git -C "$dir" -c user.name=demo -c user.email=demo@local commit -qm base
     ln -s "$REPO/node_modules" "$dir/node_modules"
+    node -e '
+      const fs = require("fs");
+      const [archivo, dir] = process.argv.slice(1);
+      let c = {};
+      try { c = JSON.parse(fs.readFileSync(archivo, "utf8")); } catch {}
+      c.projects = { ...c.projects, [dir]: { hasTrustDialogAccepted: true } };
+      fs.writeFileSync(archivo, JSON.stringify(c));
+    ' "$BASE/home/.claude.json" "$dir"
 
     (cd "$dir" && PORT=3000 node src/server.js > /dev/null 2>&1) &
     servidor=$!
     sleep 1
 
     echo "▶ $condicion #$i"
+    inicio=$(date +%s)
     (cd "$dir" && env -i PATH="$PATH" HOME="$BASE/home" TERM=xterm LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}" \
       timeout 900 claude -p "$PROMPT" --model "$MODELO" --output-format json \
-      --permission-prompts none --permission-mode acceptEdits) > "$RES/$condicion-$i.json" 2> "$RES/$condicion-$i.err" || true
+      --permission-prompts none --permission-mode acceptEdits --allowedTools "$HERRAMIENTAS") > "$RES/$condicion-$i.json" 2> "$RES/$condicion-$i.err" || true
 
+    reloj=$(( $(date +%s) - inicio ))
     pkill -P "$servidor" 2> /dev/null || true
     kill "$servidor" 2> /dev/null || true
     pkill -f "node src/server.js" 2> /dev/null || true
@@ -60,16 +74,16 @@ for condicion in con-harness sin-harness; do
       try { r = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); } catch {}
       const fila = [
         process.argv[2], process.argv[3],
-        Math.round((r.duration_ms ?? 0) / 1000),
+        process.argv[6],
         (r.total_cost_usd ?? 0).toFixed(3),
         r.num_turns ?? "",
         (r.permission_denials ?? []).length,
         process.argv[4], process.argv[5],
       ];
       console.log(fila.join(","));
-    ' "$RES/$condicion-$i.json" "$condicion" "$i" "$src_modificado" "$reporte" | tee -a "$RES/resultados.csv"
+    ' "$RES/$condicion-$i.json" "$condicion" "$i" "$src_modificado" "$reporte" "$reloj" | tee -a "$RES/resultados.csv"
 
-    git -C "$REPO" worktree remove --force "$dir"
+    git -C "$dir" diff --stat > "$RES/$condicion-$i.diff" || true
   done
 done
 
