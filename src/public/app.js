@@ -2,6 +2,7 @@
 let token = null;
 let cotizacionActual = null;
 let destinatarios = [];
+let saldo = null;
 
 const mxn = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
 const cop = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
@@ -30,7 +31,7 @@ function describirDestinatario(d) {
 }
 
 async function irAInicio() {
-  const { saldo } = await api('GET', '/api/saldo');
+  if (saldo === null) ({ saldo } = await api('GET', '/api/saldo'));
   $('saldo').textContent = mxn.format(saldo);
   mostrar('pantalla-inicio');
 }

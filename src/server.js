@@ -30,7 +30,7 @@ function obtenerTasa(tipo) {
 }
 
 function redondearCop(valor) {
-  return Math.round(valor / 500) * 500;
+  return Math.floor(valor / 500) * 500;
 }
 
 function enviarJson(res, status, data) {
