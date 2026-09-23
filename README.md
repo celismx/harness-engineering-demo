@@ -9,7 +9,9 @@ La app tiene 11 bugs a propósito. Con el mismo modelo (Claude Haiku), el harnes
 |---|---|---|
 | Sin harness | 2.8 | ~2 min |
 | Con harness | 8.8 | ~5 min |
-| Con harness + hook de verificación | 9.5 | ~6.5 min |
+| Con harness + hook de verificación | 9.3 | ~7 min |
+
+Lo que el hook no atrapa: reglas que el agente sí prueba pero marca "cumple" por error. Un hook verifica que el trabajo se hizo, no que se juzgó bien.
 
 ## El harness en 5 piezas
 
