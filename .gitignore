@@ -4,3 +4,5 @@ playwright-report/
 .playwright-mcp/
 demo-harness.zip
 resultados/
+harness-monedero.pdf
+prompt-slides.md
