@@ -1,12 +1,16 @@
-// Stop del subagente qa: no lo deja terminar una exploración hasta que la matriz de cobertura
-// del reporte tenga una fila por cada regla de docs/criterios-aceptacion.md, use el ejemplo
-// de las reglas que lo traen y respalde con screenshot cada fila marcada como "cumple".
-// Tras MAX_BLOQUEOS rechazos deja terminar, para no ciclar indefinidamente.
+// Definición de terminado del subagente qa, ejecutada como código (hook Stop).
+// Cuando el agente intenta terminar una exploración, revisa su reporte contra las reglas de
+// docs/criterios-aceptacion.md. Si algo falta, lo regresa a trabajar con la lista de pendientes:
+//   1. Cada regla tiene su fila en la matriz de cobertura.
+//   2. Cada fila tiene un veredicto claro: "cumple" o "no cumple".
+//   3. Cada fila tiene un screenshot como evidencia.
+//   4. Si la regla trae un ejemplo, el caso de prueba usa ese ejemplo.
+// Regresa al agente como máximo MAX_REGRESOS veces, para no ciclar indefinidamente.
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const MAX_BLOQUEOS = 3;
+const MAX_REGRESOS = 3;
 
 let entrada = '';
 process.stdin.on('data', (parte) => (entrada += parte));
@@ -17,45 +21,43 @@ process.stdin.on('end', () => {
   if (!fs.existsSync(reporte)) return;
 
   const contador = path.join(os.tmpdir(), `qa-cobertura-${evento.agent_id ?? evento.session_id}`);
-  const bloqueos = fs.existsSync(contador) ? Number(fs.readFileSync(contador, 'utf8')) : 0;
-  if (bloqueos >= MAX_BLOQUEOS) return;
+  const regresos = fs.existsSync(contador) ? Number(fs.readFileSync(contador, 'utf8')) : 0;
+  if (regresos >= MAX_REGRESOS) return;
 
+  // Reglas: "- **R13** texto… Ejemplo: $1,002 MXN …"
   const criterios = fs.readFileSync(path.join(raiz, 'docs/criterios-aceptacion.md'), 'utf8');
   const reglas = [...criterios.matchAll(/^- \*\*(R\d+)\*\*(.*)$/gm)].map(([, id, texto]) => ({
     id,
-    ejemplo: texto.match(/Ejemplo:\s*\$?([\d,.]+)/)?.[1].replace(/[,.]/g, ''),
+    ejemplo: texto.match(/Ejemplo:\s*\$?([\d,]+)/)?.[1].replaceAll(',', ''),
   }));
 
+  // Filas de la matriz: "| R13 | caso | no cumple: … | qa/evidence/r13.png |"
   const filas = new Map();
   for (const linea of fs.readFileSync(reporte, 'utf8').split('\n')) {
     const id = linea.match(/^\|\s*\**(R\d+)\b/)?.[1];
-    if (id) filas.set(id, (filas.get(id) ?? '') + linea);
+    if (id) filas.set(id, linea);
   }
 
   const pendientes = [];
   for (const { id, ejemplo } of reglas) {
     const fila = filas.get(id);
     if (!fila) {
-      pendientes.push(`${id}: falta su fila en la matriz de cobertura.`);
+      pendientes.push(`${id}: no tiene fila en la matriz.`);
       continue;
     }
-    if (ejemplo && !fila.replace(/[,.\s]/g, '').includes(ejemplo)) {
-      pendientes.push(`${id}: la regla trae un ejemplo; el caso debe usar ese ejemplo tal cual.`);
-    }
-    if (/\bcumple\b/i.test(fila) && !/no cumple/i.test(fila) && !/\.png/.test(fila)) {
-      pendientes.push(`${id}: está marcada "cumple" sin screenshot que lo respalde.`);
+    if (!/\bcumple\b/i.test(fila)) pendientes.push(`${id}: falta el veredicto ("cumple" o "no cumple").`);
+    if (!fila.includes('.png')) pendientes.push(`${id}: falta el screenshot.`);
+    if (ejemplo && !fila.replaceAll(',', '').includes(ejemplo)) {
+      pendientes.push(`${id}: la regla trae un ejemplo; pruébalo tal cual.`);
     }
   }
   if (pendientes.length === 0) return;
 
-  fs.writeFileSync(contador, String(bloqueos + 1));
+  fs.writeFileSync(contador, String(regresos + 1));
   process.stdout.write(
     JSON.stringify({
       decision: 'block',
-      reason:
-        'La matriz de cobertura de qa/reports/exploracion.md está incompleta. ' +
-        'Ejecuta en el navegador los casos que faltan, actualiza el reporte y vuelve a terminar:\n- ' +
-        pendientes.join('\n- '),
+      reason: `Todavía no terminas. Pendientes en qa/reports/exploracion.md:\n- ${pendientes.join('\n- ')}`,
     }),
   );
 });

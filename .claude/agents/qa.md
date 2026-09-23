@@ -35,7 +35,7 @@ Sigue los pasos del ticket al pie de la letra, dos veces, y compara contra el es
    - Si la regla trae un ejemplo, el primer caso es **ese ejemplo tal cual**.
    - Si la regla depende del destinatario, pruébala con **cada** destinatario.
    - Si la regla habla de una pantalla (inicio, cotización, comprobante), el caso termina **mirando esa pantalla**.
-2. Ejecuta los casos y llena la matriz: resultado (cumple / no cumple) y screenshot.
+2. Ejecuta los casos y llena la matriz: resultado (**cumple** o **no cumple**, nunca "no verificado") y screenshot.
 3. No terminas mientras quede una fila sin resultado.
 
 ## Veredicto (uno solo por ticket)
