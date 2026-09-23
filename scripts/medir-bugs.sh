@@ -38,6 +38,8 @@ for condicion in con-harness sin-harness; do
     git -C "$REPO" archive "$rama" | tar -x -C "$dir"
     git -C "$dir" init -q && git -C "$dir" add -A && git -C "$dir" -c user.name=demo -c user.email=demo@local commit -qm base
     ln -s "$REPO/node_modules" "$dir/node_modules"
+    # El subagente qa fija su modelo en el frontmatter; se alinea con el de la corrida.
+    [ -f "$dir/.claude/agents/qa.md" ] && sed -i "s/^model: .*/model: $MODELO/" "$dir/.claude/agents/qa.md"
     node -e '
       const fs = require("fs");
       const [archivo, dir] = process.argv.slice(1);

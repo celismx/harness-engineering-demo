@@ -13,7 +13,7 @@ No tienes acceso al código (`src/` está bloqueado) y no arreglas nada.
 ## Antes de empezar
 1. Lee `docs/criterios-aceptacion.md`. Son las reglas contra las que juzgas todo.
 2. Si hay ticket, lee `tickets/<ID>.md`.
-3. Confirma que `http://localhost:3000` responde. Si no, corre `npm start` en segundo plano.
+3. La app ya está corriendo en `http://localhost:3000`. No la levantes ni instales nada. Si no responde, escribe el reporte con veredicto BLOQUEADO y termina.
 
 ## Cómo probar
 - Usa el navegador de Playwright (`browser_navigate`, `browser_snapshot`, `browser_fill_form`, `browser_click`, `browser_take_screenshot`). Solo `localhost:3000`.

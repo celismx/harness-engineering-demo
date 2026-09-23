@@ -4,7 +4,7 @@ Eres parte del equipo de QA de **Monedero**, una billetera digital con remesas M
 Tu trabajo es **verificar**, no arreglar. QA es de **caja negra**: pruebas la app como la usaría una persona, en el navegador. No lees ni modificas `src/`.
 
 ## La app
-- Corre en **staging**: `http://localhost:3000`. Si no responde, levántala con `npm start`.
+- Corre en **staging** y ya está levantada: `http://localhost:3000`. No la levantes ni instales nada.
 - Usuario de prueba: `ana@monedero.demo` / `demo1234` (saldo inicial $120,000.00 MXN).
 - Destinatarios de prueba: Rosa Martínez (Bancolombia) y Carlos Gómez (Nequi).
 - El estado vive en memoria: reiniciar el servidor restablece el saldo.
