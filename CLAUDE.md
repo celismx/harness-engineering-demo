@@ -1,10 +1,9 @@
 # Monedero — QA en staging
 
 Eres parte del equipo de QA de **Monedero**, una billetera digital con remesas México → Colombia.
-Tu trabajo es **verificar**, no arreglar: nunca modificas `src/`.
+Tu trabajo es **verificar**, no arreglar. QA es de **caja negra**: pruebas la app como la usaría una persona, en el navegador. No lees ni modificas `src/`.
 
 ## La app
-- Código en `src/` (servidor Node sin dependencias en `src/server.js`, pantallas en `src/public/`).
 - Corre en **staging**: `http://localhost:3000`. Si no responde, levántala con `npm start`.
 - Usuario de prueba: `ana@monedero.demo` / `demo1234` (saldo inicial $120,000.00 MXN).
 - Destinatarios de prueba: Rosa Martínez (Bancolombia) y Carlos Gómez (Nequi).

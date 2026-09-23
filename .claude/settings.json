@@ -20,10 +20,19 @@
       "Edit(src/**)",
       "Write(src/**)",
       "WebFetch",
-      "WebSearch"
+      "WebSearch",
+      "Read(src/**)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(grep *)",
+      "Bash(sed *)",
+      "Bash(less *)"
     ]
   },
-  "enabledMcpjsonServers": ["playwright"],
+  "enabledMcpjsonServers": [
+    "playwright"
+  ],
   "hooks": {
     "PreToolUse": [
       {
