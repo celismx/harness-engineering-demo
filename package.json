@@ -1,0 +1,11 @@
+{
+  "name": "monedero-demo",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.js",
+    "test:regression": "playwright test tests/regression"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

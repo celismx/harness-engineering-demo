@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monedero</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="banner-ambiente">STAGING · datos de prueba</div>
+
+    <main>
+      <h1 class="marca">Monedero</h1>
+
+      <section id="pantalla-login" class="tarjeta">
+        <h2>Iniciar sesión</h2>
+        <form id="form-login">
+          <label>Correo <input name="correo" type="email" value="ana@monedero.demo" /></label>
+          <label>Contraseña <input name="password" type="password" /></label>
+          <button type="submit">Entrar</button>
+          <p class="error" id="error-login"></p>
+        </form>
+      </section>
+
+      <section id="pantalla-inicio" class="tarjeta" hidden>
+        <p>Hola, <strong id="nombre-usuario"></strong></p>
+        <p class="etiqueta">Saldo disponible</p>
+        <p class="saldo" id="saldo"></p>
+        <button id="btn-enviar">Enviar remesa a Colombia</button>
+      </section>
+
+      <section id="pantalla-envio" class="tarjeta" hidden>
+        <h2>Enviar remesa México → Colombia</h2>
+        <form id="form-envio">
+          <label>Destinatario <select name="destinatario" id="destinatario"></select></label>
+          <label>Monto a enviar (MXN) <input name="monto" type="number" step="0.01" /></label>
+          <button type="submit">Cotizar</button>
+          <p class="error" id="error-envio"></p>
+        </form>
+      </section>
+
+      <section id="pantalla-cotizacion" class="tarjeta" hidden>
+        <h2>Cotización</h2>
+        <dl class="detalle">
+          <dt>Destinatario</dt><dd id="cot-destinatario"></dd>
+          <dt>Envías</dt><dd id="cot-monto"></dd>
+          <dt>Comisión</dt><dd id="cot-comision"></dd>
+          <dt>Total a pagar</dt><dd id="cot-total"></dd>
+          <dt>Tipo de cambio</dt><dd id="cot-tasa"></dd>
+          <dt>Recibe</dt><dd id="cot-recibe" class="destacado"></dd>
+        </dl>
+        <p class="nota">Esta cotización está garantizada por 30 minutos.</p>
+        <button id="btn-confirmar">Confirmar envío</button>
+        <button id="btn-cancelar" class="secundario">Cancelar</button>
+        <p class="error" id="error-confirmar"></p>
+      </section>
+
+      <section id="pantalla-comprobante" class="tarjeta" hidden>
+        <h2>Comprobante de envío</h2>
+        <dl class="detalle">
+          <dt>Folio</dt><dd id="comp-folio"></dd>
+          <dt>Fecha</dt><dd id="comp-fecha"></dd>
+          <dt>Destinatario</dt><dd id="comp-destinatario"></dd>
+          <dt>Envías</dt><dd id="comp-monto"></dd>
+          <dt>Comisión</dt><dd id="comp-comision"></dd>
+          <dt>Total cobrado</dt><dd id="comp-total"></dd>
+          <dt>Tipo de cambio</dt><dd id="comp-tasa"></dd>
+          <dt>Recibe</dt><dd id="comp-recibe" class="destacado"></dd>
+          <dt>Saldo restante</dt><dd id="comp-saldo"></dd>
+        </dl>
+        <button id="btn-inicio">Volver al inicio</button>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

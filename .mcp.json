@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.82",
+        "--headless",
+        "--isolated",
+        "--output-dir",
+        "qa/evidence",
+        "--allowed-origins",
+        "http://localhost:3000"
+      ]
+    }
+  }
+}

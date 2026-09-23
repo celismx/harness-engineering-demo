@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Edit(qa/**)",
+      "Write(qa/**)",
+      "Edit(tests/regression/**)",
+      "Write(tests/regression/**)",
+      "Bash(npm start*)",
+      "Bash(npx playwright test*)",
+      "Bash(curl -s http://localhost:3000*)",
+      "Bash(curl http://localhost:3000*)",
+      "Bash(ls *)",
+      "mcp__playwright__*"
+    ],
+    "deny": [
+      "Edit(src/**)",
+      "Write(src/**)",
+      "WebFetch",
+      "WebSearch"
+    ]
+  },
+  "enabledMcpjsonServers": ["playwright"],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__playwright__browser_navigate",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/solo-localhost.js\""
+          }
+        ]
+      }
+    ]
+  }
+}
