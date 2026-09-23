@@ -10,6 +10,7 @@ set -euo pipefail
 
 N=${N:-3}
 MODELO=${MODELO:-haiku}
+CONDICIONES=${CONDICIONES:-con-harness sin-harness}
 BASE=${BASE:-/tmp/monedero-medicion}
 REPO=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 RES="$REPO/resultados/$(date +%Y%m%d-%H%M%S)"
@@ -29,7 +30,7 @@ if curl -s -o /dev/null http://localhost:3000; then
   exit 1
 fi
 
-for condicion in con-harness sin-harness; do
+for condicion in $CONDICIONES; do
   rama=$([ "$condicion" = con-harness ] && echo main || echo sin-harness)
   for i in $(seq 1 "$N"); do
     dir="$BASE/$condicion-$i"
