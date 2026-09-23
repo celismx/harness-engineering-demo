@@ -37,7 +37,7 @@ for condicion in con-harness sin-harness; do
     sleep 1
 
     echo "▶ $condicion #$i"
-    (cd "$dir" && env -i PATH="$PATH" HOME="$BASE/home" TERM=xterm \
+    (cd "$dir" && env -i PATH="$PATH" HOME="$BASE/home" TERM=xterm LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}" \
       timeout 900 claude -p "$PROMPT" --model "$MODELO" --output-format json \
       --permission-prompts none --permission-mode acceptEdits) > "$RES/$condicion-$i.json" 2> "$RES/$condicion-$i.err" || true
 
