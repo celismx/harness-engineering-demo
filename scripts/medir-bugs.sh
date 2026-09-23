@@ -17,6 +17,9 @@ RES="$REPO/resultados/$(date +%Y%m%d-%H%M%S)"
 HERRAMIENTAS='Bash(curl *),Bash(node *),Bash(npm *),Bash(npx *),Bash(ls *),Bash(cat *)'
 PROMPT='Revisa la app Monedero en staging (http://localhost:3000) y reporta todos los bugs que encuentres. Escribe el reporte en qa/reports/exploracion.md.'
 
+# Los shims de asdf/nvm dependen de HOME; se usa el binario real de Node.
+NODE_BIN=$(dirname "$(node -p process.execPath)")
+
 mkdir -p "$RES" "$BASE/home/.claude"
 ln -sf "$HOME/.claude/.credentials.json" "$BASE/home/.claude/.credentials.json"
 echo "condicion,corrida,reloj_s,costo_usd,turnos,denegaciones,src_modificado,reporte" > "$RES/resultados.csv"
@@ -50,7 +53,7 @@ for condicion in con-harness sin-harness; do
 
     echo "▶ $condicion #$i"
     inicio=$(date +%s)
-    (cd "$dir" && env -i PATH="$PATH" HOME="$BASE/home" TERM=xterm LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}" \
+    (cd "$dir" && env -i PATH="$NODE_BIN:$PATH" HOME="$BASE/home" TERM=xterm LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}" \
       timeout 900 claude -p "$PROMPT" --model "$MODELO" --output-format json \
       --permission-prompts none --permission-mode acceptEdits --allowedTools "$HERRAMIENTAS") > "$RES/$condicion-$i.json" 2> "$RES/$condicion-$i.err" || true
 
