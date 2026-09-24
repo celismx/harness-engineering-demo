@@ -113,18 +113,21 @@ const rutas = {
     const destinatario = destinatarios.find((d) => d.id === destinatarioId) ?? destinatarios[0];
     const tasa = obtenerTasa('operativa');
 
+    const saldoAnterior = usuario.saldo;
     usuario.saldo -= cotizacion.total + cotizacion.comision;
     cotizaciones.delete(cotizacionId);
 
     enviarJson(res, 200, {
       folio: 'MON-' + Math.floor(100000 + Math.random() * 900000),
       fecha: new Date().toISOString(),
+      remitente: usuario.nombreCompleto,
       destinatario,
       montoMxn: cotizacion.montoMxn,
       comision: cotizacion.comision,
       total: cotizacion.total,
       tasa,
       montoCop: redondearCop(cotizacion.montoMxn * tasa),
+      saldoAnterior,
       saldo: usuario.saldo,
     });
   },

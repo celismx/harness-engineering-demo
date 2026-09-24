@@ -100,3 +100,16 @@ button.secundario {
 .error {
   color: #c62828;
 }
+
+.promo {
+  background: #e8f5ee;
+  color: #1c6b45;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: -4px 0 12px;
+  font-size: 0.9rem;
+}
+
+.nota {
+  margin-top: -4px;
+}

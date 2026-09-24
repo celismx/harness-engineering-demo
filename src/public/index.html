@@ -26,6 +26,8 @@
         <p>Hola, <strong id="nombre-usuario"></strong></p>
         <p class="etiqueta">Saldo disponible</p>
         <p class="saldo" id="saldo"></p>
+        <p class="etiqueta">Último envío</p>
+        <p id="ultimo-envio">Sin envíos todavía</p>
         <button id="btn-enviar">Enviar remesa a Colombia</button>
       </section>
 
@@ -33,7 +35,9 @@
         <h2>Enviar remesa México → Colombia</h2>
         <form id="form-envio">
           <label>Destinatario <select name="destinatario" id="destinatario"></select></label>
+          <p class="promo">Envíos a Nequi: comisión de solo $29 MXN.</p>
           <label>Monto a enviar (MXN) <input name="monto" type="number" step="0.01" /></label>
+          <p class="nota">Mínimo $100 · Máximo $50,000 por envío · A Nequi, hasta $10,000.</p>
           <button type="submit">Cotizar</button>
           <p class="error" id="error-envio"></p>
         </form>
@@ -47,6 +51,7 @@
           <dt>Comisión</dt><dd id="cot-comision"></dd>
           <dt>Total a pagar</dt><dd id="cot-total"></dd>
           <dt>Tipo de cambio</dt><dd id="cot-tasa"></dd>
+          <dt>Cálculo</dt><dd id="cot-calculo"></dd>
           <dt>Recibe</dt><dd id="cot-recibe" class="destacado"></dd>
         </dl>
         <p class="nota">Esta cotización está garantizada por 30 minutos.</p>
@@ -60,12 +65,15 @@
         <dl class="detalle">
           <dt>Folio</dt><dd id="comp-folio"></dd>
           <dt>Fecha</dt><dd id="comp-fecha"></dd>
+          <dt>Remitente</dt><dd id="comp-remitente"></dd>
           <dt>Destinatario</dt><dd id="comp-destinatario"></dd>
           <dt>Envías</dt><dd id="comp-monto"></dd>
           <dt>Comisión</dt><dd id="comp-comision"></dd>
           <dt>Total cobrado</dt><dd id="comp-total"></dd>
           <dt>Tipo de cambio</dt><dd id="comp-tasa"></dd>
+          <dt>Monto cotizado</dt><dd id="comp-cotizado"></dd>
           <dt>Recibe</dt><dd id="comp-recibe" class="destacado"></dd>
+          <dt>Saldo anterior</dt><dd id="comp-saldo-anterior"></dd>
           <dt>Saldo restante</dt><dd id="comp-saldo"></dd>
         </dl>
         <button id="btn-inicio">Volver al inicio</button>

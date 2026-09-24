@@ -75,6 +75,7 @@ $('form-envio').addEventListener('submit', async (e) => {
     $('cot-comision').textContent = mxn.format(cotizacion.comision);
     $('cot-total').textContent = mxn.format(cotizacion.total);
     $('cot-tasa').textContent = `1 MXN = ${cotizacion.tasa} COP`;
+    $('cot-calculo').textContent = `${mxn.format(cotizacion.montoMxn)} × ${cotizacion.tasa} = ${cop.format(cotizacion.montoMxn * cotizacion.tasa)}`;
     $('cot-recibe').textContent = cop.format(cotizacion.montoCop);
     $('error-confirmar').textContent = '';
     mostrar('pantalla-cotizacion');
@@ -90,14 +91,18 @@ $('btn-confirmar').addEventListener('click', async () => {
       destinatarioId: cotizacionActual.destinatarioId,
     });
     $('comp-folio').textContent = c.folio;
-    $('comp-fecha').textContent = new Date(c.fecha).toLocaleDateString('en-US');
+    $('comp-fecha').textContent = new Date(c.fecha).toLocaleDateString('en-US', { dateStyle: 'long' });
+    $('comp-remitente').textContent = c.remitente;
     $('comp-destinatario').textContent = describirDestinatario(c.destinatario);
     $('comp-monto').textContent = mxn.format(c.montoMxn);
     $('comp-comision').textContent = mxn.format(c.comision);
     $('comp-total').textContent = mxn.format(c.total);
     $('comp-tasa').textContent = `1 MXN = ${c.tasa} COP`;
+    $('comp-cotizado').textContent = cop.format(cotizacionActual.montoCop);
     $('comp-recibe').textContent = cop.format(c.montoCop);
+    $('comp-saldo-anterior').textContent = mxn.format(c.saldoAnterior);
     $('comp-saldo').textContent = mxn.format(c.saldo);
+    $('ultimo-envio').textContent = `${mxn.format(c.total)} a ${c.destinatario.nombre} · folio ${c.folio}`;
     mostrar('pantalla-comprobante');
   } catch (error) {
     $('error-confirmar').textContent = error.message;
