@@ -145,14 +145,16 @@ http
       if (!publica && !usuario) return enviarJson(res, 401, { error: 'Sesión no válida' });
       return ruta(req, res, usuario);
     }
-    if (MODO_PROFESOR && req.url === '/modo-profesor.css') {
-      res.writeHead(200, { 'Content-Type': 'text/css' });
-      return fs.createReadStream(path.join(__dirname, 'modo-profesor.css')).pipe(res);
+    if (MODO_PROFESOR && ['/modo-profesor.css', '/modo-profesor.js'].includes(req.url)) {
+      res.writeHead(200, { 'Content-Type': tiposMime[path.extname(req.url)] });
+      return fs.createReadStream(path.join(__dirname, req.url)).pipe(res);
     }
     if (MODO_PROFESOR && req.url === '/') {
       const html = fs.readFileSync(path.join(PUBLICO, 'index.html'), 'utf8');
       res.writeHead(200, { 'Content-Type': 'text/html' });
-      return res.end(html.replace('</head>', '  <link rel="stylesheet" href="/modo-profesor.css" />\n  </head>'));
+      return res.end(html
+        .replace('</head>', '  <link rel="stylesheet" href="/modo-profesor.css" />\n  </head>')
+        .replace('</body>', '  <script src="/modo-profesor.js"></script>\n  </body>'));
     }
     const archivo = path.join(PUBLICO, req.url === '/' ? 'index.html' : path.normalize(req.url));
     if (!archivo.startsWith(PUBLICO) || !fs.existsSync(archivo) || fs.statSync(archivo).isDirectory()) {

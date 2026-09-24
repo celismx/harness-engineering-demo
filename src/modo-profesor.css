@@ -1,6 +1,5 @@
-/* Modo profesor (MODO_PROFESOR=1): subraya en la app cada uno de los 11 bugs sembrados. */
-#comp-tasa, #comp-recibe, #comp-saldo, #comp-destinatario, #comp-fecha, #comp-remitente,
-#cot-recibe, #cot-comision, #saldo, #monto-ayuda {
+/* Modo profesor (MODO_PROFESOR=1): resalta cada bug sembrado cuando modo-profesor.js detecta que ocurre. */
+.bug-activo {
   background: #fdecea;
   border-bottom: 3px solid #d32f2f;
   border-radius: 4px 4px 0 0;
@@ -8,22 +7,20 @@
   min-height: 1.6em;
 }
 
-#comp-tasa::after, #comp-recibe::after, #comp-saldo::after, #comp-destinatario::after,
-#comp-fecha::after, #comp-remitente::after, #cot-recibe::after, #cot-comision::after,
-#saldo::after, #monto-ayuda::after {
+.bug-activo::after {
   display: block;
   font-size: 0.75rem;
   font-weight: 600;
   color: #d32f2f;
 }
 
-#comp-tasa::after { content: 'Bug 1 · no es el tipo de cambio cotizado'; }
-#comp-recibe::after { content: 'Bug 1 · recibe menos que el monto cotizado'; }
-#comp-saldo::after { content: 'Bug 2 · la comisión se cobró dos veces'; }
-#comp-destinatario::after { content: 'Bug 3 · si eliges a Carlos, sale Rosa'; }
-#monto-ayuda::after { content: 'Bugs 4, 5 y 9 · acepta más de $50,000, montos negativos y más de $10,000 a Nequi'; }
-#comp-fecha::after { content: 'Bug 6 · formato de EE. UU., debe ser DD/MM/AAAA'; }
-#cot-recibe::after { content: 'Bug 7 · redondea hacia abajo, no al múltiplo de 500 más cercano'; }
-#cot-comision::after { content: 'Bug 8 · a Nequi debería ser $29'; }
-#saldo::after { content: 'Bug 10 · no se actualiza después de enviar'; font-size: 0.8rem; }
-#comp-remitente::after { content: 'Bug 11 · falta el nombre del remitente'; }
+#comp-tasa.bug-activo::after { content: 'Bug 1 · no es el tipo de cambio cotizado'; }
+#comp-recibe.bug-activo::after { content: 'Bug 1 · recibe menos que el monto cotizado'; }
+#comp-saldo.bug-activo::after { content: 'Bug 2 · bajó más que el total cobrado: la comisión se cobró dos veces'; }
+#comp-destinatario.bug-activo::after { content: 'Bug 3 · no es el destinatario que elegiste'; }
+#monto-ayuda.bug-activo::after { content: 'Bugs 4, 5 y 9 · la app no aplica estos límites'; }
+#comp-fecha.bug-activo::after { content: 'Bug 6 · formato de EE. UU., debe ser DD/MM/AAAA'; }
+#cot-recibe.bug-activo::after { content: 'Bug 7 · redondea hacia abajo, no al múltiplo de 500 más cercano'; }
+#cot-comision.bug-activo::after { content: 'Bug 8 · a Nequi debería ser $29'; }
+#saldo.bug-activo::after { content: 'Bug 10 · no refleja el último envío'; font-size: 0.8rem; }
+#comp-remitente.bug-activo::after { content: 'Bug 11 · falta el nombre del remitente'; }
