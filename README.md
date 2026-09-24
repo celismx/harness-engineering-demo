@@ -2,16 +2,21 @@
 
 Demo de una clase sobre **harness engineering**: cómo diseñar el entorno de un agente de IA para que trabaje bien.
 
-El agente es un **QA Agent** que prueba "Monedero", una billetera de prueba con remesas México → Colombia.
-La app tiene 11 bugs a propósito. Con el mismo modelo (Claude Haiku), el harness hace la diferencia:
+El agente es un **QA Agent** que prueba "Tiendita", una tienda en línea de prueba con 10 bugs a propósito.
+Cada bug rompe una regla de negocio de `docs/criterios-aceptacion.md` (el Bug 3 rompe la R3, etc.):
 
-| Versión | Bugs encontrados (de 11, promedio de 3 corridas) | Tiempo |
+| # | Bug | Se ve en |
 |---|---|---|
-| Sin harness | 2.8 | ~2 min |
-| Con harness | 8.8 | ~5 min |
-| Con harness + hook de verificación | 9.3 | ~7 min |
-
-Lo que el hook no atrapa: reglas que el agente sí prueba pero marca "cumple" por error. Un hook verifica que el trabajo se hizo, no que se juzgó bien.
+| 1 | El cobro final no descuenta el cupón (ticket CHK-101) | Confirmación |
+| 2 | Cambiar la cantidad no actualiza el subtotal de la línea | Carrito |
+| 3 | El precio del carrito no es el del catálogo | Carrito |
+| 4 | "Eliminar" quita el producto de la lista, pero no del total | Carrito |
+| 5 | El contador del carrito no se actualiza al agregar | Catálogo |
+| 6 | El pedido sale a otra dirección que la elegida | Confirmación |
+| 7 | Cobra envío en compras de $1,000 o más | Carrito |
+| 8 | Suma IVA a precios que ya lo incluyen | Carrito |
+| 9 | Deja comprar más de 5 unidades de un producto | Carrito |
+| 10 | Acepta un cupón vencido | Carrito |
 
 ## El harness en 5 piezas
 
@@ -19,44 +24,46 @@ Lo que el hook no atrapa: reglas que el agente sí prueba pero marca "cumple" po
 |---|---|---|
 | Contexto | "Esta es la app y estas son las reglas del negocio." | `CLAUDE.md`, `docs/criterios-aceptacion.md` |
 | Rol | "Eres QA: pruebas como una persona. No arreglas código." | `.claude/agents/qa.md` |
-| Herramientas | "Tienes un navegador, y solo ve la app de prueba." | `.mcp.json` (Playwright) |
+| Herramientas | "Tienes un navegador, y solo ve la app de prueba." | `.mcp.json` (Playwright), `.claude/skills/test-regresion/` |
 | Guardrails | "No puedes tocar el código ni salir a internet." | `.claude/settings.json`, `.claude/hooks/solo-localhost.js` |
 | Verificación | "No te creo que terminaste hasta que cada regla tenga veredicto y foto." | `.claude/hooks/revisar-cobertura.js` |
 
 ## Cómo correrlo
 
-Requisitos: Node 20+ y [Claude Code](https://claude.com/claude-code).
+Requisitos: Node 20+, Git y [Claude Code](https://claude.com/claude-code).
 
 ```bash
 npm install
 npx playwright install chromium
-npm start                      # app en http://localhost:3000 (usuario: ana@monedero.demo / demo1234)
+npm start        # la tienda en http://localhost:3000 · ana@tiendita.demo / demo1234
 ```
 
 En otra terminal, dentro del repo:
 
 ```bash
 claude
-> Toma el ticket REM-142 y verifícalo.
-> Revisa la app y reporta todos los bugs que encuentres.
+> Toma el ticket CHK-101 y verifícalo.
+> Revisa la tienda y reporta todos los bugs que encuentres.
 ```
 
 El QA Agent deja su reporte en `qa/reports/` y los screenshots en `qa/evidence/`.
 
-### Modo profesor
+## Los comandos de la demo
 
-Para mostrar los 11 bugs en clase, levanta una segunda copia de la app con cada bug resaltado:
+| Comando | Qué hace |
+|---|---|
+| `npm run harness:off` | Quita los archivos del harness y dice qué pieza se va con cada uno |
+| `npm run harness:on` | Los restaura desde git |
+| `npm run harness:status` | Muestra qué piezas del harness están presentes |
+| `npm run fix` | Aplica la corrección de CHK-101 (rama `fix`) y muestra el cambio |
+| `npm run reset` | Deja todo como al inicio: código con bugs, harness prendido, sin reportes ni tests nuevos |
+| `npm run test:regression` | Corre los tests de regresión |
 
-```bash
-MODO_PROFESOR=1 PORT=3001 npm start   # http://localhost:3001
-```
+`npm start` usa `node --watch`: al aplicar el fix o el reset, la app se reinicia sola.
 
-Los agentes siguen usando `http://localhost:3000`, sin marcas.
+## Medir con y sin harness
 
-## Comparar con y sin harness
-
-La rama `sin-harness` tiene la misma app sin `CLAUDE.md`, `.claude/`, `.mcp.json` ni `docs/`.
-`scripts/medir-bugs.sh` corre el mismo prompt en ambas versiones y deja un CSV en `resultados/`:
+`scripts/medir-bugs.sh` corre el mismo prompt con y sin harness y deja un CSV en `resultados/`:
 
 ```bash
 N=3 MODELO=haiku ./scripts/medir-bugs.sh

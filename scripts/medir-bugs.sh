@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Corre N veces el mismo prompt de búsqueda de bugs con Haiku, con harness (rama main)
-# y sin harness (rama sin-harness), y deja reportes + CSV en resultados/<fecha>/.
+# y sin harness (la misma rama sin los archivos del harness), y deja reportes + CSV en resultados/<fecha>/.
 #
 # Aislamiento: Claude Code carga ~/.claude/CLAUDE.md por HOME y también al recorrer los
 # directorios padre del repo, y resuelve la config del proyecto por la raíz de git (un
@@ -16,7 +16,7 @@ REPO=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 RES="$REPO/resultados/$(date +%Y%m%d-%H%M%S)"
 # Misma base de herramientas genéricas para ambas condiciones; las reglas deny del harness ganan.
 HERRAMIENTAS='Bash(curl *),Bash(node *),Bash(npm *),Bash(npx *),Bash(ls *),Bash(cat *)'
-PROMPT='Revisa la app Monedero en staging (http://localhost:3000) y reporta todos los bugs que encuentres. Escribe el reporte en qa/reports/exploracion.md.'
+PROMPT='Revisa la tienda Tiendita en staging (http://localhost:3000) y reporta todos los bugs que encuentres. Escribe el reporte en qa/reports/exploracion.md.'
 
 # Los shims de asdf/nvm dependen de HOME; se usa el binario real de Node.
 NODE_BIN=$(dirname "$(node -p process.execPath)")
@@ -31,12 +31,12 @@ if curl -s -o /dev/null http://localhost:3000; then
 fi
 
 for condicion in $CONDICIONES; do
-  rama=$([ "$condicion" = con-harness ] && echo main || echo sin-harness)
   for i in $(seq 1 "$N"); do
     dir="$BASE/$condicion-$i"
     rm -rf "$dir"
     mkdir -p "$dir"
-    git -C "$REPO" archive "$rama" | tar -x -C "$dir"
+    git -C "$REPO" archive main | tar -x -C "$dir"
+    [ "$condicion" = sin-harness ] && rm -rf "$dir/CLAUDE.md" "$dir/docs" "$dir/.claude" "$dir/.mcp.json"
     git -C "$dir" init -q && git -C "$dir" add -A && git -C "$dir" -c user.name=demo -c user.email=demo@local commit -qm base
     ln -s "$REPO/node_modules" "$dir/node_modules"
     # El subagente qa fija su modelo en el frontmatter; se alinea con el de la corrida.

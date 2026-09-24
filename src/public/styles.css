@@ -5,27 +5,34 @@
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
-  background: #f3f5f9;
-  color: #1c2333;
+  background: #f5f5f2;
+  color: #22221f;
 }
 
 .banner-ambiente {
   background: #f59e0b;
-  color: #1c2333;
+  color: #22221f;
   text-align: center;
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 6px;
 }
 
+.barra,
 main {
-  max-width: 460px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 0 16px;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .marca {
-  color: #3b3fd8;
+  color: #0f766e;
 }
 
 .tarjeta {
@@ -50,7 +57,7 @@ select {
 }
 
 button {
-  background: #3b3fd8;
+  background: #0f766e;
   color: #fff;
   border: 0;
   border-radius: 8px;
@@ -60,56 +67,102 @@ button {
 }
 
 button.secundario {
-  background: #e5e7eb;
-  color: #1c2333;
+  background: #e7e5e0;
+  color: #22221f;
 }
 
-.saldo {
+button.enlace {
+  background: none;
+  color: #b42318;
+  padding: 4px;
+}
+
+.catalogo {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.producto {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+  display: grid;
+  gap: 6px;
+}
+
+.producto h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.emoji {
   font-size: 2rem;
+}
+
+.precio {
+  font-size: 1.2rem;
   font-weight: 700;
-  margin: 4px 0 16px;
+  margin: 0;
 }
 
-.etiqueta,
-.nota {
-  color: #5b6478;
-  font-size: 0.9rem;
+.lineas {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
 }
 
-.detalle {
+.lineas th,
+.lineas td {
+  text-align: left;
+  padding: 8px 4px;
+  border-bottom: 1px solid #e7e5e0;
+}
+
+.lineas input {
+  width: 64px;
+}
+
+.cupon {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.cupon label {
+  flex: 1;
+  margin: 0;
+}
+
+.resumen {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 8px 16px;
+  margin: 16px 0;
 }
 
-.detalle dt {
-  color: #5b6478;
+.resumen dt {
+  color: #5f5e57;
 }
 
-.detalle dd {
+.resumen dd {
   margin: 0;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-.destacado {
-  font-size: 1.3rem;
+.resumen .total {
+  font-size: 1.2rem;
   font-weight: 700;
+  color: #22221f;
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
 }
 
 .error {
-  color: #c62828;
-}
-
-.promo {
-  background: #e8f5ee;
-  color: #1c6b45;
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin: -4px 0 12px;
-  font-size: 0.9rem;
-}
-
-.nota {
-  margin-top: -4px;
+  color: #b42318;
 }

@@ -1,8 +1,13 @@
 {
-  "name": "monedero-demo",
+  "name": "tiendita-demo",
   "private": true,
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node --watch src/server.js",
+    "harness:off": "node scripts/harness.js off",
+    "harness:on": "node scripts/harness.js on",
+    "harness:status": "node scripts/harness.js status",
+    "fix": "node scripts/fix.js",
+    "reset": "node scripts/reset.js",
     "test:regression": "playwright test tests/regression"
   },
   "devDependencies": {

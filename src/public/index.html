@@ -3,80 +3,73 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Monedero</title>
+    <title>Tiendita</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <div class="banner-ambiente">STAGING · datos de prueba</div>
 
-    <main>
-      <h1 class="marca">Monedero</h1>
+    <header class="barra">
+      <h1 class="marca">Tiendita</h1>
+      <button id="btn-carrito" class="secundario" hidden>🛒 Carrito (<span id="contador">0</span>)</button>
+    </header>
 
+    <main>
       <section id="pantalla-login" class="tarjeta">
         <h2>Iniciar sesión</h2>
         <form id="form-login">
-          <label>Correo <input name="correo" type="email" value="ana@monedero.demo" /></label>
+          <label>Correo <input name="correo" type="email" value="ana@tiendita.demo" /></label>
           <label>Contraseña <input name="password" type="password" /></label>
           <button type="submit">Entrar</button>
           <p class="error" id="error-login"></p>
         </form>
       </section>
 
-      <section id="pantalla-inicio" class="tarjeta" hidden>
-        <p>Hola, <strong id="nombre-usuario"></strong></p>
-        <p class="etiqueta">Saldo disponible</p>
-        <p class="saldo" id="saldo"></p>
-        <p class="etiqueta">Último envío</p>
-        <p id="ultimo-envio">Sin envíos todavía</p>
-        <button id="btn-enviar">Enviar remesa a Colombia</button>
+      <section id="pantalla-catalogo" hidden>
+        <p>Hola, <strong id="nombre-usuario"></strong>. Envío gratis en compras desde $1,000.</p>
+        <div class="catalogo" id="catalogo"></div>
       </section>
 
-      <section id="pantalla-envio" class="tarjeta" hidden>
-        <h2>Enviar remesa México → Colombia</h2>
-        <form id="form-envio">
-          <label>Destinatario <select name="destinatario" id="destinatario"></select></label>
-          <p class="promo">Envíos a Nequi: comisión de solo $29 MXN.</p>
-          <label>Monto a enviar (MXN) <input name="monto" type="number" step="0.01" /></label>
-          <p class="nota" id="monto-ayuda">Mínimo $100 · Máximo $50,000 por envío · A Nequi, hasta $10,000.</p>
-          <button type="submit">Cotizar</button>
-          <p class="error" id="error-envio"></p>
+      <section id="pantalla-carrito" class="tarjeta" hidden>
+        <h2>Tu carrito</h2>
+        <table class="lineas">
+          <thead>
+            <tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th><th></th></tr>
+          </thead>
+          <tbody id="lineas"></tbody>
+        </table>
+
+        <form id="form-cupon" class="cupon">
+          <label>Cupón <input name="codigo" placeholder="BIENVENIDA100" /></label>
+          <button type="submit" class="secundario">Aplicar</button>
         </form>
+        <p class="error" id="error-cupon"></p>
+
+        <dl class="resumen">
+          <dt>Subtotal</dt><dd id="res-subtotal"></dd>
+          <dt id="res-cupon-etiqueta">Cupón</dt><dd id="res-cupon"></dd>
+          <dt>Envío</dt><dd id="res-envio"></dd>
+          <dt>IVA (16%)</dt><dd id="res-iva"></dd>
+          <dt class="total">Total</dt><dd id="res-total" class="total"></dd>
+        </dl>
+
+        <label>Enviar a <select id="direccion"></select></label>
+        <div class="acciones">
+          <button id="btn-pagar">Pagar</button>
+          <button id="btn-seguir" class="secundario">Seguir comprando</button>
+        </div>
+        <p class="error" id="error-pagar"></p>
       </section>
 
-      <section id="pantalla-cotizacion" class="tarjeta" hidden>
-        <h2>Cotización</h2>
-        <dl class="detalle">
-          <dt>Destinatario</dt><dd id="cot-destinatario"></dd>
-          <dt>Envías</dt><dd id="cot-monto"></dd>
-          <dt>Comisión</dt><dd id="cot-comision"></dd>
-          <dt>Total a pagar</dt><dd id="cot-total"></dd>
-          <dt>Tipo de cambio</dt><dd id="cot-tasa"></dd>
-          <dt>Cálculo</dt><dd id="cot-calculo"></dd>
-          <dt>Recibe</dt><dd id="cot-recibe" class="destacado"></dd>
+      <section id="pantalla-confirmacion" class="tarjeta" hidden>
+        <h2>¡Gracias por tu compra!</h2>
+        <dl class="resumen">
+          <dt>Pedido</dt><dd id="conf-numero"></dd>
+          <dt>Enviamos a</dt><dd id="conf-direccion"></dd>
+          <dt>Productos</dt><dd id="conf-productos"></dd>
+          <dt class="total">Total cobrado</dt><dd id="conf-total" class="total"></dd>
         </dl>
-        <p class="nota">Esta cotización está garantizada por 30 minutos.</p>
-        <button id="btn-confirmar">Confirmar envío</button>
-        <button id="btn-cancelar" class="secundario">Cancelar</button>
-        <p class="error" id="error-confirmar"></p>
-      </section>
-
-      <section id="pantalla-comprobante" class="tarjeta" hidden>
-        <h2>Comprobante de envío</h2>
-        <dl class="detalle">
-          <dt>Folio</dt><dd id="comp-folio"></dd>
-          <dt>Fecha</dt><dd id="comp-fecha"></dd>
-          <dt>Remitente</dt><dd id="comp-remitente"></dd>
-          <dt>Destinatario</dt><dd id="comp-destinatario"></dd>
-          <dt>Envías</dt><dd id="comp-monto"></dd>
-          <dt>Comisión</dt><dd id="comp-comision"></dd>
-          <dt>Total cobrado</dt><dd id="comp-total"></dd>
-          <dt>Tipo de cambio</dt><dd id="comp-tasa"></dd>
-          <dt>Monto cotizado</dt><dd id="comp-cotizado"></dd>
-          <dt>Recibe</dt><dd id="comp-recibe" class="destacado"></dd>
-          <dt>Saldo anterior</dt><dd id="comp-saldo-anterior"></dd>
-          <dt>Saldo restante</dt><dd id="comp-saldo"></dd>
-        </dl>
-        <button id="btn-inicio">Volver al inicio</button>
+        <button id="btn-volver">Seguir comprando</button>
       </section>
     </main>
 

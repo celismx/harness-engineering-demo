@@ -1,13 +1,13 @@
-# Monedero — QA en staging
+# Tiendita — QA en staging
 
-Eres parte del equipo de QA de **Monedero**, una billetera digital con remesas México → Colombia.
+Eres parte del equipo de QA de **Tiendita**, una tienda en línea de accesorios para celular.
 Tu trabajo es **verificar**, no arreglar. QA es de **caja negra**: pruebas la app como la usaría una persona, en el navegador. No lees ni modificas `src/`.
 
 ## La app
 - Corre en **staging** y ya está levantada: `http://localhost:3000`. No la levantes ni instales nada.
-- Usuario de prueba: `ana@monedero.demo` / `demo1234` (saldo inicial $120,000.00 MXN).
-- Destinatarios de prueba: Rosa Martínez (Bancolombia) y Carlos Gómez (Nequi).
-- El estado vive en memoria: reiniciar el servidor restablece el saldo.
+- Usuario de prueba: `ana@tiendita.demo` / `demo1234`.
+- Direcciones de prueba: Casa y Oficina.
+- El estado vive en memoria: reiniciar el servidor vacía el carrito.
 
 ## Fuentes de verdad
 - Reglas de negocio: `docs/criterios-aceptacion.md`. Un comportamiento que las contradice es un bug, aunque la pantalla "se vea bien".

@@ -1,4 +1,4 @@
-// Servidor de la demo Monedero (STAGING). Sin dependencias: npm start
+// Servidor de la demo Tiendita (STAGING). Sin dependencias: npm start
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -6,33 +6,33 @@ const crypto = require('node:crypto');
 
 const PORT = Number(process.env.PORT) || 3000;
 const PUBLICO = path.join(__dirname, 'public');
-const MODO_PROFESOR = process.env.MODO_PROFESOR === '1';
 
-const COMISION_MXN = 49;
-const LIMITE_MENSUAL_MXN = 150000;
-const VIGENCIA_COTIZACION_MS = 30 * 60 * 1000;
+const COSTO_ENVIO = 100;
+const TASA_IVA = 0.16;
 
 const usuarios = {
-  'ana@monedero.demo': { nombre: 'Ana López', password: 'demo1234', saldo: 120000 },
+  'ana@tiendita.demo': { nombre: 'Ana López', password: 'demo1234' },
 };
 
-const destinatarios = [
-  { id: 1, nombre: 'Rosa Martínez', banco: 'Bancolombia', cuenta: '****4821', ciudad: 'Cali' },
-  { id: 2, nombre: 'Carlos Gómez', banco: 'Nequi', cuenta: '300****112', ciudad: 'Medellín' },
+const productos = [
+  { id: 'audifonos', nombre: 'Audífonos inalámbricos', precio: 900, precioLista: 950, emoji: '🎧' },
+  { id: 'cargador', nombre: 'Cargador rápido 30 W', precio: 400, precioLista: 400, emoji: '🔌' },
+  { id: 'funda', nombre: 'Funda para celular', precio: 250, precioLista: 250, emoji: '📱' },
+  { id: 'cable', nombre: 'Cable USB-C 2 m', precio: 150, precioLista: 150, emoji: '🔗' },
 ];
 
+const direcciones = [
+  { id: 1, alias: 'Casa', calle: 'Av. Reforma 123, Col. Juárez, CDMX' },
+  { id: 2, alias: 'Oficina', calle: 'Insurgentes Sur 456, Col. Roma, CDMX' },
+];
+
+const cupones = {
+  BIENVENIDA100: { descuento: 100, vence: '2026-12-31' },
+  VERANO20: { descuento: 200, vence: '2026-08-31' },
+};
+
 const sesiones = new Map();
-const cotizaciones = new Map();
-
-// Proveedor de tipo de cambio simulado (COP por 1 MXN).
-function obtenerTasa(tipo) {
-  const tasas = { indicativa: 215, operativa: 210.5 };
-  return tasas[tipo];
-}
-
-function redondearCop(valor) {
-  return Math.floor(valor / 500) * 500;
-}
+const carritos = new Map();
 
 function enviarJson(res, status, data) {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -53,10 +53,28 @@ function leerCuerpo(req) {
   });
 }
 
-function usuarioDeSesion(req) {
-  const token = (req.headers.authorization || '').replace('Bearer ', '');
-  const correo = sesiones.get(token);
-  return correo ? usuarios[correo] : null;
+function carritoDe(correo) {
+  if (!carritos.has(correo)) carritos.set(correo, { items: [], cupon: null });
+  return carritos.get(correo);
+}
+
+function lineas(carrito) {
+  return carrito.items.map(({ id, cantidad }) => {
+    const producto = productos.find((p) => p.id === id);
+    return { id, nombre: producto.nombre, emoji: producto.emoji, precio: producto.precioLista, cantidad };
+  });
+}
+
+function calcularResumen(carrito, cupon) {
+  const subtotal = lineas(carrito).reduce((suma, l) => suma + l.precio * l.cantidad, 0);
+  const descuento = cupon ? cupones[cupon].descuento : 0;
+  const envio = carrito.items.length > 0 ? COSTO_ENVIO : 0;
+  const iva = Math.round(subtotal * TASA_IVA);
+  return { subtotal, cupon, descuento, envio, iva, total: subtotal - descuento + envio + iva };
+}
+
+function respuestaCarrito(carrito) {
+  return { lineas: lineas(carrito), resumen: calcularResumen(carrito, carrito.cupon) };
 }
 
 const rutas = {
@@ -71,66 +89,63 @@ const rutas = {
     enviarJson(res, 200, { token, nombre: usuario.nombre });
   },
 
-  'GET /api/saldo': async (req, res, usuario) => {
-    enviarJson(res, 200, { saldo: usuario.saldo, moneda: 'MXN' });
+  'GET /api/productos': async (req, res) => enviarJson(res, 200, productos),
+
+  'GET /api/direcciones': async (req, res) => enviarJson(res, 200, direcciones),
+
+  'GET /api/carrito': async (req, res, correo) => enviarJson(res, 200, respuestaCarrito(carritoDe(correo))),
+
+  'POST /api/carrito': async (req, res, correo) => {
+    const { id } = await leerCuerpo(req);
+    if (!productos.some((p) => p.id === id)) return enviarJson(res, 404, { error: 'Producto no encontrado' });
+    const carrito = carritoDe(correo);
+    const item = carrito.items.find((i) => i.id === id);
+    if (item) item.cantidad += 1;
+    else carrito.items.push({ id, cantidad: 1 });
+    enviarJson(res, 200, respuestaCarrito(carrito));
   },
 
-  'GET /api/destinatarios': async (req, res) => {
-    enviarJson(res, 200, destinatarios);
+  'PUT /api/carrito': async (req, res, correo) => {
+    const { id, cantidad } = await leerCuerpo(req);
+    const carrito = carritoDe(correo);
+    const item = carrito.items.find((i) => i.id === id);
+    if (!item) return enviarJson(res, 404, { error: 'El producto no está en el carrito' });
+    const nueva = Number(cantidad);
+    if (!Number.isInteger(nueva) || nueva < 1) return enviarJson(res, 400, { error: 'Cantidad inválida' });
+    item.cantidad = nueva;
+    enviarJson(res, 200, respuestaCarrito(carrito));
   },
 
-  'POST /api/cotizacion': async (req, res, usuario) => {
-    const { monto } = await leerCuerpo(req);
-    const montoMxn = Number(monto);
-    if (Number.isNaN(montoMxn)) {
-      return enviarJson(res, 400, { error: 'Monto inválido' });
-    }
-    if (montoMxn > LIMITE_MENSUAL_MXN) {
-      return enviarJson(res, 400, { error: 'El monto supera el límite permitido' });
-    }
-    if (montoMxn + COMISION_MXN > usuario.saldo) {
-      return enviarJson(res, 400, { error: 'Saldo insuficiente' });
-    }
-    const tasa = obtenerTasa('indicativa');
-    const cotizacion = {
-      id: crypto.randomUUID(),
-      montoMxn,
-      comision: COMISION_MXN,
-      total: montoMxn + COMISION_MXN,
-      tasa,
-      montoCop: redondearCop(montoMxn * tasa),
-      vence: Date.now() + VIGENCIA_COTIZACION_MS,
+  'DELETE /api/carrito': async (req, res, correo) => {
+    const { id } = await leerCuerpo(req);
+    const carrito = carritoDe(correo);
+    carrito.items = carrito.items.filter((i) => i.id !== id);
+    enviarJson(res, 200, respuestaCarrito(carrito));
+  },
+
+  'POST /api/cupon': async (req, res, correo) => {
+    const { codigo } = await leerCuerpo(req);
+    const clave = String(codigo || '').trim().toUpperCase();
+    if (!cupones[clave]) return enviarJson(res, 400, { error: 'Cupón no válido' });
+    const carrito = carritoDe(correo);
+    carrito.cupon = clave;
+    enviarJson(res, 200, respuestaCarrito(carrito));
+  },
+
+  'POST /api/pedidos': async (req, res, correo) => {
+    const { direccionId } = await leerCuerpo(req);
+    const carrito = carritoDe(correo);
+    if (carrito.items.length === 0) return enviarJson(res, 400, { error: 'Tu carrito está vacío' });
+    const direccion = direcciones.find((d) => d.id === direccionId) ?? direcciones[0];
+    const resumen = calcularResumen(carrito);
+    const pedido = {
+      numero: 'PED-' + Math.floor(100000 + Math.random() * 900000),
+      lineas: lineas(carrito),
+      direccion,
+      totalCobrado: resumen.total,
     };
-    cotizaciones.set(cotizacion.id, cotizacion);
-    enviarJson(res, 200, cotizacion);
-  },
-
-  'POST /api/confirmar': async (req, res, usuario) => {
-    const { cotizacionId, destinatarioId } = await leerCuerpo(req);
-    const cotizacion = cotizaciones.get(cotizacionId);
-    if (!cotizacion || cotizacion.vence < Date.now()) {
-      return enviarJson(res, 400, { error: 'La cotización venció, vuelve a cotizar' });
-    }
-    const destinatario = destinatarios.find((d) => d.id === destinatarioId) ?? destinatarios[0];
-    const tasa = obtenerTasa('operativa');
-
-    const saldoAnterior = usuario.saldo;
-    usuario.saldo -= cotizacion.total + cotizacion.comision;
-    cotizaciones.delete(cotizacionId);
-
-    enviarJson(res, 200, {
-      folio: 'MON-' + Math.floor(100000 + Math.random() * 900000),
-      fecha: new Date().toISOString(),
-      remitente: usuario.nombreCompleto,
-      destinatario,
-      montoMxn: cotizacion.montoMxn,
-      comision: cotizacion.comision,
-      total: cotizacion.total,
-      tasa,
-      montoCop: redondearCop(cotizacion.montoMxn * tasa),
-      saldoAnterior,
-      saldo: usuario.saldo,
-    });
+    carritos.delete(correo);
+    enviarJson(res, 200, pedido);
   },
 };
 
@@ -141,20 +156,9 @@ http
     const ruta = rutas[`${req.method} ${req.url}`];
     if (ruta) {
       const publica = req.url === '/api/login';
-      const usuario = usuarioDeSesion(req);
-      if (!publica && !usuario) return enviarJson(res, 401, { error: 'Sesión no válida' });
-      return ruta(req, res, usuario);
-    }
-    if (MODO_PROFESOR && ['/modo-profesor.css', '/modo-profesor.js'].includes(req.url)) {
-      res.writeHead(200, { 'Content-Type': tiposMime[path.extname(req.url)] });
-      return fs.createReadStream(path.join(__dirname, req.url)).pipe(res);
-    }
-    if (MODO_PROFESOR && req.url === '/') {
-      const html = fs.readFileSync(path.join(PUBLICO, 'index.html'), 'utf8');
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      return res.end(html
-        .replace('</head>', '  <link rel="stylesheet" href="/modo-profesor.css" />\n  </head>')
-        .replace('</body>', '  <script src="/modo-profesor.js"></script>\n  </body>'));
+      const correo = sesiones.get((req.headers.authorization || '').replace('Bearer ', ''));
+      if (!publica && !correo) return enviarJson(res, 401, { error: 'Sesión no válida' });
+      return ruta(req, res, correo);
     }
     const archivo = path.join(PUBLICO, req.url === '/' ? 'index.html' : path.normalize(req.url));
     if (!archivo.startsWith(PUBLICO) || !fs.existsSync(archivo) || fs.statSync(archivo).isDirectory()) {
@@ -164,6 +168,4 @@ http
     res.writeHead(200, { 'Content-Type': tiposMime[path.extname(archivo)] || 'text/plain' });
     fs.createReadStream(archivo).pipe(res);
   })
-  .listen(PORT, () =>
-    console.log(`Monedero (STAGING${MODO_PROFESOR ? ', modo profesor' : ''}) en http://localhost:${PORT}`),
-  );
+  .listen(PORT, () => console.log(`Tiendita (STAGING) en http://localhost:${PORT}`));

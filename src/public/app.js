@@ -1,11 +1,9 @@
-// Monedero (STAGING): lógica de las pantallas.
+// Tiendita (STAGING): lógica de las pantallas.
 let token = null;
-let cotizacionActual = null;
-let destinatarios = [];
-let saldo = null;
+let productos = [];
+let lineasActuales = [];
 
 const mxn = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
-const cop = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
 
 function $(id) {
   return document.getElementById(id);
@@ -26,88 +24,115 @@ async function api(metodo, ruta, cuerpo) {
   return datos;
 }
 
-function describirDestinatario(d) {
-  return `${d.nombre} · ${d.banco} ${d.cuenta}`;
+async function cargarCatalogo() {
+  productos = await api('GET', '/api/productos');
+  const { lineas } = await api('GET', '/api/carrito');
+  $('contador').textContent = lineas.reduce((suma, l) => suma + l.cantidad, 0);
+  $('catalogo').innerHTML = productos
+    .map(
+      (p) => `<article class="producto">
+        <span class="emoji">${p.emoji}</span>
+        <h3>${p.nombre}</h3>
+        <p class="precio">${mxn.format(p.precio)}</p>
+        <button data-agregar="${p.id}">Agregar al carrito</button>
+      </article>`,
+    )
+    .join('');
+  mostrar('pantalla-catalogo');
 }
 
-async function irAInicio() {
-  if (saldo === null) ({ saldo } = await api('GET', '/api/saldo'));
-  $('saldo').textContent = mxn.format(saldo);
-  mostrar('pantalla-inicio');
+function pintarLineas() {
+  $('lineas').innerHTML = lineasActuales
+    .map(
+      (l) => `<tr>
+        <td>${l.emoji} ${l.nombre}</td>
+        <td>${mxn.format(l.precio)}</td>
+        <td><input type="number" min="1" value="${l.cantidad}" data-cantidad="${l.id}" aria-label="Cantidad de ${l.nombre}" /></td>
+        <td>${mxn.format(l.precio)}</td>
+        <td><button class="enlace" data-eliminar="${l.id}">Eliminar</button></td>
+      </tr>`,
+    )
+    .join('');
+}
+
+function pintarCarrito({ lineas, resumen }) {
+  lineasActuales = lineas;
+  pintarLineas();
+  $('res-subtotal').textContent = mxn.format(resumen.subtotal);
+  $('res-cupon-etiqueta').textContent = resumen.cupon ? `Cupón ${resumen.cupon}` : 'Cupón';
+  $('res-cupon').textContent = resumen.descuento ? `−${mxn.format(resumen.descuento)}` : '—';
+  $('res-envio').textContent = mxn.format(resumen.envio);
+  $('res-iva').textContent = mxn.format(resumen.iva);
+  $('res-total').textContent = mxn.format(resumen.total);
+}
+
+async function abrirCarrito() {
+  const [carrito, direcciones] = await Promise.all([api('GET', '/api/carrito'), api('GET', '/api/direcciones')]);
+  $('direccion').innerHTML = direcciones.map((d) => `<option value="${d.id}">${d.alias} · ${d.calle}</option>`).join('');
+  pintarCarrito(carrito);
+  $('error-cupon').textContent = '';
+  $('error-pagar').textContent = '';
+  mostrar('pantalla-carrito');
 }
 
 $('form-login').addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = new FormData(e.target);
   try {
-    const datos = await api('POST', '/api/login', {
-      correo: form.get('correo'),
-      password: form.get('password'),
-    });
+    const datos = await api('POST', '/api/login', { correo: form.get('correo'), password: form.get('password') });
     token = datos.token;
     $('nombre-usuario').textContent = datos.nombre;
-    destinatarios = await api('GET', '/api/destinatarios');
-    $('destinatario').innerHTML = destinatarios
-      .map((d) => `<option value="${d.id}">${describirDestinatario(d)}</option>`)
-      .join('');
-    await irAInicio();
+    $('btn-carrito').hidden = false;
+    await cargarCatalogo();
   } catch (error) {
     $('error-login').textContent = error.message;
   }
 });
 
-$('btn-enviar').addEventListener('click', () => {
-  $('error-envio').textContent = '';
-  mostrar('pantalla-envio');
+$('catalogo').addEventListener('click', async (e) => {
+  const id = e.target.dataset.agregar;
+  if (!id) return;
+  await api('POST', '/api/carrito', { id });
+  e.target.textContent = 'Agregado ✓';
+  setTimeout(() => (e.target.textContent = 'Agregar al carrito'), 1200);
 });
 
-$('form-envio').addEventListener('submit', async (e) => {
+$('lineas').addEventListener('change', async (e) => {
+  const id = e.target.dataset.cantidad;
+  if (!id) return;
+  pintarCarrito(await api('PUT', '/api/carrito', { id, cantidad: e.target.value }));
+});
+
+$('lineas').addEventListener('click', (e) => {
+  const id = e.target.dataset.eliminar;
+  if (!id) return;
+  lineasActuales = lineasActuales.filter((l) => l.id !== id);
+  pintarLineas();
+});
+
+$('form-cupon').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const form = new FormData(e.target);
   try {
-    const cotizacion = await api('POST', '/api/cotizacion', { monto: form.get('monto') });
-    const destinatarioId = form.get('destinatario');
-    cotizacionActual = { ...cotizacion, destinatarioId };
-
-    const destinatario = destinatarios.find((d) => String(d.id) === destinatarioId);
-    $('cot-destinatario').textContent = describirDestinatario(destinatario);
-    $('cot-monto').textContent = mxn.format(cotizacion.montoMxn);
-    $('cot-comision').textContent = mxn.format(cotizacion.comision);
-    $('cot-total').textContent = mxn.format(cotizacion.total);
-    $('cot-tasa').textContent = `1 MXN = ${cotizacion.tasa} COP`;
-    $('cot-calculo').textContent = `${mxn.format(cotizacion.montoMxn)} × ${cotizacion.tasa} = ${cop.format(cotizacion.montoMxn * cotizacion.tasa)}`;
-    $('cot-recibe').textContent = cop.format(cotizacion.montoCop);
-    $('error-confirmar').textContent = '';
-    mostrar('pantalla-cotizacion');
+    pintarCarrito(await api('POST', '/api/cupon', { codigo: new FormData(e.target).get('codigo') }));
+    $('error-cupon').textContent = '';
   } catch (error) {
-    $('error-envio').textContent = error.message;
+    $('error-cupon').textContent = error.message;
   }
 });
 
-$('btn-confirmar').addEventListener('click', async () => {
+$('btn-pagar').addEventListener('click', async () => {
   try {
-    const c = await api('POST', '/api/confirmar', {
-      cotizacionId: cotizacionActual.id,
-      destinatarioId: cotizacionActual.destinatarioId,
-    });
-    $('comp-folio').textContent = c.folio;
-    $('comp-fecha').textContent = new Date(c.fecha).toLocaleDateString('en-US', { dateStyle: 'long' });
-    $('comp-remitente').textContent = c.remitente;
-    $('comp-destinatario').textContent = describirDestinatario(c.destinatario);
-    $('comp-monto').textContent = mxn.format(c.montoMxn);
-    $('comp-comision').textContent = mxn.format(c.comision);
-    $('comp-total').textContent = mxn.format(c.total);
-    $('comp-tasa').textContent = `1 MXN = ${c.tasa} COP`;
-    $('comp-cotizado').textContent = cop.format(cotizacionActual.montoCop);
-    $('comp-recibe').textContent = cop.format(c.montoCop);
-    $('comp-saldo-anterior').textContent = mxn.format(c.saldoAnterior);
-    $('comp-saldo').textContent = mxn.format(c.saldo);
-    $('ultimo-envio').textContent = `${mxn.format(c.total)} a ${c.destinatario.nombre} · folio ${c.folio}`;
-    mostrar('pantalla-comprobante');
+    const pedido = await api('POST', '/api/pedidos', { direccionId: $('direccion').value });
+    $('conf-numero').textContent = pedido.numero;
+    $('conf-direccion').textContent = `${pedido.direccion.alias} · ${pedido.direccion.calle}`;
+    $('conf-productos').textContent = pedido.lineas.map((l) => `${l.cantidad} × ${l.nombre}`).join(', ');
+    $('conf-total').textContent = mxn.format(pedido.totalCobrado);
+    mostrar('pantalla-confirmacion');
   } catch (error) {
-    $('error-confirmar').textContent = error.message;
+    $('error-pagar').textContent = error.message;
   }
 });
 
-$('btn-cancelar').addEventListener('click', irAInicio);
-$('btn-inicio').addEventListener('click', irAInicio);
+$('btn-carrito').addEventListener('click', abrirCarrito);
+$('btn-seguir').addEventListener('click', cargarCatalogo);
+$('btn-volver').addEventListener('click', cargarCatalogo);
