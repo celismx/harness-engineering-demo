@@ -1,0 +1,18 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]: STAGING · datos de prueba
+  - banner [ref=e3]:
+    - heading "Tiendita" [level=1] [ref=e4]
+    - button "🛒 Carrito (0)" [ref=e14] [cursor=pointer]
+  - main [ref=e5]:
+    - generic [ref=e106]:
+      - heading "¡Gracias por tu compra!" [level=2] [ref=e107]
+      - generic [ref=e108]:
+        - term [ref=e109]: Pedido
+        - definition [ref=e110]: PED-218631
+        - term [ref=e111]: Enviamos a
+        - definition [ref=e112]: Casa · Av. Reforma 123, Col. Juárez, CDMX
+        - term [ref=e113]: Productos
+        - definition [ref=e114]: 1 × Cargador rápido 30 W, 1 × Funda para celular
+        - term [ref=e115]: Total cobrado
+        - definition [ref=e116]: $754.00
+      - button "Seguir comprando" [ref=e117] [cursor=pointer]

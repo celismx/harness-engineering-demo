@@ -1,0 +1,16 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e2]: STAGING · datos de prueba
+  - banner [ref=f1e3]:
+    - heading "Tiendita" [level=1] [ref=f1e4]
+  - main [ref=f1e5]:
+    - generic [ref=f1e6]:
+      - heading "Iniciar sesión" [level=2] [ref=f1e7]
+      - generic [ref=f1e8]:
+        - generic [ref=f1e9]:
+          - text: Correo
+          - textbox "Correo" [ref=f1e10]: ana@tiendita.demo
+        - generic [ref=f1e11]:
+          - text: Contraseña
+          - textbox "Contraseña" [ref=f1e12]
+        - button "Entrar" [ref=f1e13] [cursor=pointer]
+        - paragraph

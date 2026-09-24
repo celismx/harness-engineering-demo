@@ -1,0 +1,60 @@
+- generic [ref=e1]:
+  - generic [ref=e2]: STAGING · datos de prueba
+  - banner [ref=e3]:
+    - heading "Tiendita" [level=1] [ref=e4]
+    - button "🛒 Carrito (0)" [active] [ref=e14] [cursor=pointer]
+  - main [ref=e5]:
+    - generic [ref=e43]:
+      - heading "Tu carrito" [level=2] [ref=e44]
+      - table [ref=e45]:
+        - rowgroup [ref=e46]:
+          - row [ref=e47]:
+            - columnheader "Producto" [ref=e48]
+            - columnheader "Precio" [ref=e49]
+            - columnheader "Cantidad" [ref=e50]
+            - columnheader "Subtotal" [ref=e51]
+            - columnheader [ref=e52]
+        - rowgroup [ref=e53]:
+          - row [ref=e54]:
+            - cell "🔌 Cargador rápido 30 W" [ref=e55]
+            - cell "$400.00" [ref=e56]
+            - cell [ref=e57]:
+              - spinbutton "Cantidad de Cargador rápido 30 W" [ref=e58]: "1"
+            - cell "$400.00" [ref=e59]
+            - cell [ref=e60]:
+              - button "Eliminar" [ref=e61] [cursor=pointer]
+          - row [ref=e62]:
+            - cell "📱 Funda para celular" [ref=e63]
+            - cell "$250.00" [ref=e64]
+            - cell [ref=e65]:
+              - spinbutton "Cantidad de Funda para celular" [ref=e66]: "1"
+            - cell "$250.00" [ref=e67]
+            - cell [ref=e68]:
+              - button "Eliminar" [ref=e69] [cursor=pointer]
+      - generic [ref=e70]:
+        - generic [ref=e71]:
+          - text: Cupón
+          - textbox "Cupón" [ref=e72]:
+            - /placeholder: BIENVENIDA100
+        - button "Aplicar" [ref=e73] [cursor=pointer]
+      - paragraph
+      - generic [ref=e74]:
+        - term [ref=e75]: Subtotal
+        - definition [ref=e76]: $650.00
+        - term [ref=e77]: Cupón
+        - definition [ref=e78]: —
+        - term [ref=e79]: Envío
+        - definition [ref=e80]: $100.00
+        - term [ref=e81]: IVA (16%)
+        - definition [ref=e82]: $104.00
+        - term [ref=e83]: Total
+        - definition [ref=e84]: $854.00
+      - generic [ref=e85]:
+        - text: Enviar a
+        - combobox "Enviar a" [ref=e86]:
+          - option "Casa · Av. Reforma 123, Col. Juárez, CDMX" [selected]
+          - option "Oficina · Insurgentes Sur 456, Col. Roma, CDMX"
+      - generic [ref=e87]:
+        - button "Pagar" [ref=e88] [cursor=pointer]
+        - button "Seguir comprando" [ref=e89] [cursor=pointer]
+      - paragraph

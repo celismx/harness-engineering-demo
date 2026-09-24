@@ -1,0 +1,61 @@
+- generic [ref=f2e1]:
+  - generic [ref=f2e2]: STAGING · datos de prueba
+  - banner [ref=f2e3]:
+    - heading "Tiendita" [level=1] [ref=f2e4]
+    - button "🛒 Carrito (0)" [ref=f2e14] [cursor=pointer]
+  - main [ref=f2e5]:
+    - generic [ref=f2e42]:
+      - heading "Tu carrito" [level=2] [ref=f2e43]
+      - table [ref=f2e44]:
+        - rowgroup [ref=f2e45]:
+          - row [ref=f2e46]:
+            - columnheader "Producto" [ref=f2e47]
+            - columnheader "Precio" [ref=f2e48]
+            - columnheader "Cantidad" [ref=f2e49]
+            - columnheader "Subtotal" [ref=f2e50]
+            - columnheader [ref=f2e51]
+        - rowgroup [ref=f2e52]:
+          - row [ref=f2e89]:
+            - cell "🔌 Cargador rápido 30 W" [ref=f2e90]
+            - cell "$400.00" [ref=f2e91]
+            - cell [ref=f2e92]:
+              - spinbutton "Cantidad de Cargador rápido 30 W" [ref=f2e93]: "1"
+            - cell "$400.00" [ref=f2e94]
+            - cell [ref=f2e95]:
+              - button "Eliminar" [ref=f2e96] [cursor=pointer]
+          - row [ref=f2e97]:
+            - cell "📱 Funda para celular" [ref=f2e98]
+            - cell "$250.00" [ref=f2e99]
+            - cell [ref=f2e100]:
+              - spinbutton "Cantidad de Funda para celular" [ref=f2e101]: "1"
+            - cell "$250.00" [ref=f2e102]
+            - cell [ref=f2e103]:
+              - button "Eliminar" [ref=f2e104] [cursor=pointer]
+      - generic [ref=f2e69]:
+        - generic [ref=f2e70]:
+          - text: Cupón
+          - textbox "Cupón" [ref=f2e71]:
+            - /placeholder: BIENVENIDA100
+            - text: BIENVENIDA100
+        - button "Aplicar" [active] [ref=f2e72] [cursor=pointer]
+      - paragraph
+      - generic [ref=f2e73]:
+        - term [ref=f2e74]: Subtotal
+        - definition [ref=f2e75]: $650.00
+        - term [ref=f2e76]: Cupón BIENVENIDA100
+        - definition [ref=f2e77]: −$100.00
+        - term [ref=f2e78]: Envío
+        - definition [ref=f2e79]: $100.00
+        - term [ref=f2e80]: IVA (16%)
+        - definition [ref=f2e81]: $104.00
+        - term [ref=f2e82]: Total
+        - definition [ref=f2e83]: $754.00
+      - generic [ref=f2e84]:
+        - text: Enviar a
+        - combobox "Enviar a" [ref=f2e85]:
+          - option "Casa · Av. Reforma 123, Col. Juárez, CDMX" [selected]
+          - option "Oficina · Insurgentes Sur 456, Col. Roma, CDMX"
+      - generic [ref=f2e86]:
+        - button "Pagar" [ref=f2e87] [cursor=pointer]
+        - button "Seguir comprando" [ref=f2e88] [cursor=pointer]
+      - paragraph

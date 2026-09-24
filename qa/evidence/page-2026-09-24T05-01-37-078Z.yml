@@ -1,0 +1,32 @@
+- generic [ref=e1]:
+  - generic [ref=e2]: STAGING · datos de prueba
+  - banner [ref=e3]:
+    - heading "Tiendita" [level=1] [ref=e4]
+    - button "🛒 Carrito (0)" [ref=e14] [cursor=pointer]
+  - main [ref=e5]:
+    - generic [ref=e15]:
+      - paragraph [ref=e16]:
+        - text: Hola,
+        - strong [ref=e17]: Ana López
+        - text: . Envío gratis en compras desde $1,000.
+      - generic [ref=e18]:
+        - article [ref=e19]:
+          - generic [ref=e20]: 🎧
+          - heading "Audífonos inalámbricos" [level=3] [ref=e21]
+          - paragraph [ref=e22]: $900.00
+          - button "Agregar al carrito" [ref=e23] [cursor=pointer]
+        - article [ref=e24]:
+          - generic [ref=e25]: 🔌
+          - heading "Cargador rápido 30 W" [level=3] [ref=e26]
+          - paragraph [ref=e27]: $400.00
+          - button "Agregado ✓" [active] [ref=e39] [cursor=pointer]
+        - article [ref=e29]:
+          - generic [ref=e30]: 📱
+          - heading "Funda para celular" [level=3] [ref=e31]
+          - paragraph [ref=e32]: $250.00
+          - button "Agregar al carrito" [ref=e33] [cursor=pointer]
+        - article [ref=e34]:
+          - generic [ref=e35]: 🔗
+          - heading "Cable USB-C 2 m" [level=3] [ref=e36]
+          - paragraph [ref=e37]: $150.00
+          - button "Agregar al carrito" [ref=e38] [cursor=pointer]
