@@ -137,7 +137,7 @@ const rutas = {
     const carrito = carritoDe(correo);
     if (carrito.items.length === 0) return enviarJson(res, 400, { error: 'Tu carrito está vacío' });
     const direccion = direcciones.find((d) => d.id === direccionId) ?? direcciones[0];
-    const resumen = calcularResumen(carrito);
+    const resumen = calcularResumen(carrito, carrito.cupon);
     const pedido = {
       numero: 'PED-' + Math.floor(100000 + Math.random() * 900000),
       lineas: lineas(carrito),
