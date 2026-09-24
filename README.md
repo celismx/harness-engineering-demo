@@ -6,15 +6,20 @@ El agente es un **QA Agent** que prueba "Tiendita", una tienda en línea de prue
 Cada bug rompe una regla de negocio de `docs/criterios-aceptacion.md`. La lista de bugs no está en el repo:
 cualquier archivo aquí lo puede leer el agente, y la demo consiste en que los encuentre.
 
-## El harness en 5 piezas
+## El Harness Canvas: seis piezas, seis archivos
 
-| Pieza | Lo que le dice al agente | Dónde está |
+| Pieza | La pregunta | Dónde está |
 |---|---|---|
-| Contexto | "Esta es la app y estas son las reglas del negocio." | `CLAUDE.md`, `docs/criterios-aceptacion.md` |
-| Rol | "Eres QA: pruebas como una persona. No arreglas código." | `.claude/agents/qa.md` |
-| Herramientas | "Tienes un navegador, y solo ve la app de prueba." | `.mcp.json` (Playwright), `.claude/skills/test-regresion/` |
-| Guardrails | "No puedes tocar el código ni salir a internet." | `.claude/settings.json`, `.claude/hooks/solo-localhost.js` |
-| Verificación | "No te creo que terminaste hasta que cada regla tenga veredicto y foto." | `.claude/hooks/revisar-cobertura.js` |
+| Objetivo y "terminado" | ¿Qué produce y cómo sé que terminó bien? | `CLAUDE.md` |
+| Contexto | ¿Qué necesita saber? | `docs/criterios-aceptacion.md`, `tickets/` |
+| Herramientas | ¿A qué sistemas accede? | `.mcp.json` (Playwright), `.claude/skills/test-regresion/` |
+| Verificación | ¿Cómo revisa su trabajo antes de entregarlo? | `.claude/hooks/revisar-cobertura.js` |
+| Guardrails | ¿Qué nunca debe hacer? | `.claude/settings.json`, `.claude/hooks/solo-localhost.js` |
+| Loop y memoria | ¿Cuándo reintenta y cuándo para? | `.claude/agents/qa.md`, `tests/regression/` |
+
+## Ejemplo 1: el agente de triage
+
+`agente-triage/` tiene el primer agente de la clase, sin código: se monta en un Proyecto de Claude y convierte un lote de reportes de clientes en tickets, respuestas y escalamientos. Su ticket CHK-101 es la entrada del QA Agent. Ver `agente-triage/README.md`.
 
 ## Cómo correrlo
 

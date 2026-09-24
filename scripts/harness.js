@@ -5,12 +5,14 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
 const RAIZ = path.join(__dirname, '..');
+// Las seis piezas del Harness Canvas, en el orden de la clase.
 const PIEZAS = [
-  { pieza: 'Contexto', archivos: ['CLAUDE.md', 'docs/criterios-aceptacion.md'], que: 'qué es la app y las reglas del negocio' },
-  { pieza: 'Rol', archivos: ['.claude/agents/qa.md'], que: 'el agente de QA y cómo trabaja' },
+  { pieza: 'Objetivo', archivos: ['CLAUDE.md'], que: 'qué es la app y qué cuenta como "terminado"' },
+  { pieza: 'Contexto', archivos: ['docs/criterios-aceptacion.md'], que: 'las reglas del negocio de la tienda' },
   { pieza: 'Herramientas', archivos: ['.mcp.json', '.claude/skills/test-regresion/SKILL.md'], que: 'el navegador (Playwright) y la skill del test' },
-  { pieza: 'Guardrails', archivos: ['.claude/settings.json', '.claude/hooks/solo-localhost.js'], que: 'permisos: no tocar src/, sin internet' },
   { pieza: 'Verificación', archivos: ['.claude/hooks/revisar-cobertura.js'], que: 'el hook que revisa el reporte antes de terminar' },
+  { pieza: 'Guardrails', archivos: ['.claude/settings.json', '.claude/hooks/solo-localhost.js'], que: 'permisos: no tocar src/, sin internet' },
+  { pieza: 'Loop', archivos: ['.claude/agents/qa.md'], que: 'el agente de QA: reproduce dos veces y re-verifica tras el fix' },
 ];
 const TODOS = PIEZAS.flatMap((p) => p.archivos);
 
@@ -44,8 +46,8 @@ function apagar() {
     const ruta = path.join(RAIZ, dir);
     if (fs.existsSync(ruta) && fs.readdirSync(ruta).length === 0) fs.rmdirSync(ruta);
   }
-  console.log(negritas(rojo('\nHarness APAGADO.')) + ' El agente ya no conoce las reglas del negocio, no tiene rol,');
-  console.log('ni navegador, ni límites, ni nadie que revise su trabajo.');
+  console.log(negritas(rojo('\nHarness APAGADO.')) + ' El agente ya no sabe qué es terminado ni las reglas del negocio;');
+  console.log('no tiene navegador, ni límites, ni nadie que revise su trabajo.');
   console.log(gris('→ Si Claude Code está abierto, sal con /exit y ábrelo de nuevo para que tome el cambio.\n'));
 }
 
@@ -53,7 +55,7 @@ function prender() {
   console.log(negritas('\n🔌 Prendiendo el harness…\n'));
   git('checkout', 'HEAD', '--', ...TODOS);
   for (const p of PIEZAS) console.log(linea(verde('✓'), p));
-  console.log(negritas(verde('\nHarness PRENDIDO.')) + ' El agente tiene contexto, rol, herramientas, guardrails y verificación.');
+  console.log(negritas(verde('\nHarness PRENDIDO.')) + ' Las seis piezas del canvas están de vuelta.');
   console.log(gris('→ Si Claude Code está abierto, sal con /exit y ábrelo de nuevo para que tome el cambio.\n'));
 }
 
