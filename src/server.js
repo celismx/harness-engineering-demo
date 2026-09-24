@@ -6,6 +6,7 @@ const crypto = require('node:crypto');
 
 const PORT = Number(process.env.PORT) || 3000;
 const PUBLICO = path.join(__dirname, 'public');
+const MODO_PROFESOR = process.env.MODO_PROFESOR === '1';
 
 const COMISION_MXN = 49;
 const LIMITE_MENSUAL_MXN = 150000;
@@ -144,6 +145,15 @@ http
       if (!publica && !usuario) return enviarJson(res, 401, { error: 'Sesión no válida' });
       return ruta(req, res, usuario);
     }
+    if (MODO_PROFESOR && req.url === '/modo-profesor.css') {
+      res.writeHead(200, { 'Content-Type': 'text/css' });
+      return fs.createReadStream(path.join(__dirname, 'modo-profesor.css')).pipe(res);
+    }
+    if (MODO_PROFESOR && req.url === '/') {
+      const html = fs.readFileSync(path.join(PUBLICO, 'index.html'), 'utf8');
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      return res.end(html.replace('</head>', '  <link rel="stylesheet" href="/modo-profesor.css" />\n  </head>'));
+    }
     const archivo = path.join(PUBLICO, req.url === '/' ? 'index.html' : path.normalize(req.url));
     if (!archivo.startsWith(PUBLICO) || !fs.existsSync(archivo) || fs.statSync(archivo).isDirectory()) {
       res.writeHead(404);
@@ -152,4 +162,6 @@ http
     res.writeHead(200, { 'Content-Type': tiposMime[path.extname(archivo)] || 'text/plain' });
     fs.createReadStream(archivo).pipe(res);
   })
-  .listen(PORT, () => console.log(`Monedero (STAGING) en http://localhost:${PORT}`));
+  .listen(PORT, () =>
+    console.log(`Monedero (STAGING${MODO_PROFESOR ? ', modo profesor' : ''}) en http://localhost:${PORT}`),
+  );
