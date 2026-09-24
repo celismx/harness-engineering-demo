@@ -43,6 +43,16 @@ claude
 
 El QA Agent deja su reporte en `qa/reports/` y los screenshots en `qa/evidence/`.
 
+### Modo profesor
+
+Para mostrar los 11 bugs en clase, levanta una segunda copia de la app con cada bug resaltado:
+
+```bash
+MODO_PROFESOR=1 PORT=3001 npm start   # http://localhost:3001
+```
+
+Los agentes siguen usando `http://localhost:3000`, sin marcas.
+
 ## Comparar con y sin harness
 
 La rama `sin-harness` tiene la misma app sin `CLAUDE.md`, `.claude/`, `.mcp.json` ni `docs/`.
