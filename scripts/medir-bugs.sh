@@ -63,7 +63,6 @@ for condicion in $CONDICIONES; do
     reloj=$(( $(date +%s) - inicio ))
     pkill -P "$servidor" 2> /dev/null || true
     kill "$servidor" 2> /dev/null || true
-    pkill -f "node src/server.js" 2> /dev/null || true
 
     reporte=no
     if [ -f "$dir/qa/reports/exploracion.md" ]; then
