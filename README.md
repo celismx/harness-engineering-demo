@@ -17,10 +17,6 @@ cualquier archivo aquí lo puede leer el agente, y la demo consiste en que los e
 | Guardrails | ¿Qué nunca debe hacer? | `.claude/settings.json`, `.claude/hooks/solo-localhost.js` |
 | Loop y memoria | ¿Cuándo reintenta y cuándo para? | `.claude/agents/qa.md`, `tests/regression/` |
 
-## Ejemplo 1: el agente de triage
-
-`agente-triage/` tiene el primer agente de la clase, sin código: se monta en un Proyecto de Claude y convierte un lote de reportes de clientes en tickets, respuestas y escalamientos. Su ticket CHK-101 es la entrada del QA Agent. Ver `agente-triage/README.md`.
-
 ## Cómo correrlo
 
 Requisitos: Node 20+, Git y [Claude Code](https://claude.com/claude-code).
