@@ -2,21 +2,9 @@
 
 Demo de una clase sobre **harness engineering**: cómo diseñar el entorno de un agente de IA para que trabaje bien.
 
-El agente es un **QA Agent** que prueba "Tiendita", una tienda en línea de prueba con 10 bugs a propósito.
-Cada bug rompe una regla de negocio de `docs/criterios-aceptacion.md` (el Bug 3 rompe la R3, etc.):
-
-| # | Bug | Se ve en |
-|---|---|---|
-| 1 | El cobro final no descuenta el cupón (ticket CHK-101) | Confirmación |
-| 2 | Cambiar la cantidad no actualiza el subtotal de la línea | Carrito |
-| 3 | El precio del carrito no es el del catálogo | Carrito |
-| 4 | "Eliminar" quita el producto de la lista, pero no del total | Carrito |
-| 5 | El contador del carrito no se actualiza al agregar | Catálogo |
-| 6 | El pedido sale a otra dirección que la elegida | Confirmación |
-| 7 | Cobra envío en compras de $1,000 o más | Carrito |
-| 8 | Suma IVA a precios que ya lo incluyen | Carrito |
-| 9 | Deja comprar más de 5 unidades de un producto | Carrito |
-| 10 | Acepta un cupón vencido | Carrito |
+El agente es un **QA Agent** que prueba "Tiendita", una tienda en línea de prueba con 10 bugs sembrados a propósito.
+Cada bug rompe una regla de negocio de `docs/criterios-aceptacion.md`. La lista de bugs no está en el repo:
+cualquier archivo aquí lo puede leer el agente, y la demo consiste en que los encuentre.
 
 ## El harness en 5 piezas
 
